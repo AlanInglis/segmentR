@@ -18,7 +18,8 @@ Read a PNG or JPG image from a URL and return the image data.
 }
 \examples{
 \dontrun{
-img <- read_image_from_url("https://example.com/image.jpg")
+img <- read_image_from_url("https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png")
+magick::image_read(img)
 }
 
 }

@@ -16,7 +16,7 @@ plot_segmented(
 
 \item{segmented_img}{A \code{magick-image} object representing the segmented image.}
 
-\item{divider}{Character. One of \code{"line"}, \code{"arrow"}, or \code{"none"}. Default is \code{"line"}.}
+\item{divider}{Character. One of \code{"line"} or \code{"none"}. Default is \code{"line"}.}
 
 \item{show_title}{Logical. Whether to show image titles above the panels. Default is \code{TRUE}.}
 }

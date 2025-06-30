@@ -4,10 +4,10 @@
 \alias{read_image}
 \title{read_image}
 \usage{
-read_image(file_path, width = NULL, height = NULL, rotate = NULL)
+read_image(img, width = NULL, height = NULL, rotate = NULL)
 }
 \arguments{
-\item{file_path}{Character. Path or URL to the image file.}
+\item{img}{Character. Path or URL to the image file.}
 
 \item{width}{Integer or NULL. New width in pixels. Default is NULL.}
 
@@ -30,7 +30,7 @@ Resizing maintains aspect ratio unless both dimensions are specified. Use \code{
 }
 \examples{
 \dontrun{
-img <- read_image("https://upload.wikimedia.org/wikipedia/en/a/a1/Radiohead.okcomputer.albumart.jpg", width = 300)
+img <- read_image("https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png", width = 300)
 plot(img)
 }
 

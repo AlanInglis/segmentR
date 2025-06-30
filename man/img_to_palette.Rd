@@ -5,7 +5,7 @@
 \title{img_to_palette}
 \usage{
 img_to_palette(
-  path,
+  img,
   n = NULL,
   avg_cols = FALSE,
   exclude = FALSE,
@@ -14,7 +14,7 @@ img_to_palette(
 )
 }
 \arguments{
-\item{path}{Character. Path or URL to the image.}
+\item{img}{magick image object \emph{or} path/URL to the image.}
 
 \item{n}{Integer. Number of top colours to extract. Default is NULL (all).}
 

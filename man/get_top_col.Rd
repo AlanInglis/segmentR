@@ -5,7 +5,7 @@
 \title{get_top_col}
 \usage{
 get_top_col(
-  path,
+  img,
   n = NULL,
   exclude = TRUE,
   sig = 4,
@@ -15,7 +15,7 @@ get_top_col(
 )
 }
 \arguments{
-\item{path}{Character. File path or URL to a PNG or JPG image.}
+\item{img}{Character (file path/URL) or magick image object or array.}
 
 \item{n}{Integer. Number of top colours to extract. Default is NULL (returns all).}
 
@@ -33,6 +33,6 @@ get_top_col(
 A data frame with hex codes, frequency, percentage, and optionally average colours.
 }
 \description{
-Extract the top colours from an image file (local or URL), with optional exclusion of black/white shades
-and colour grouping via k-means clustering.
+Extract the top colours from an image file (local, URL, or magick image object),
+with optional exclusion of black/white shades and colour grouping via k-means clustering.
 }
