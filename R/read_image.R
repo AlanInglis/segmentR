@@ -10,7 +10,7 @@
 #' Resizing maintains aspect ratio unless both dimensions are specified. Use \code{rotate} to rotate the image clockwise
 #' (e.g., 90, 180, 270).
 #'
-#' @param file_path Character. Path or URL to the image file.
+#' @param img Character. Path or URL to the image file.
 #' @param width Integer or NULL. New width in pixels. Default is NULL.
 #' @param height Integer or NULL. New height in pixels. Default is NULL.
 #' @param rotate Numeric or NULL. Degrees to rotate the image clockwise. Default is NULL.
@@ -19,20 +19,20 @@
 #'
 #' @examples
 #' \dontrun{
-#' img <- read_image("https://upload.wikimedia.org/wikipedia/en/a/a1/Radiohead.okcomputer.albumart.jpg", width = 300)
+#' img <- read_image("https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png", width = 300)
 #' plot(img)
 #' }
 #'
 #' @importFrom magick image_read image_scale image_rotate
 #' @export
-read_image <- function(file_path, width = NULL, height = NULL, rotate = NULL) {
+read_image <- function(img, width = NULL, height = NULL, rotate = NULL) {
   # Basic checks
-  if (!is.character(file_path) || length(file_path) != 1) {
-    stop("file_path must be a single character string.")
+  if (!is.character(img) || length(img) != 1) {
+    stop("img must be a single character string.")
   }
 
   # Read image
-  img <- magick::image_read(file_path)
+  img <- magick::image_read(img)
 
   # Resize logic
   if (!is.null(width) && !is.null(height)) {
