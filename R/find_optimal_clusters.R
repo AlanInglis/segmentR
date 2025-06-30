@@ -15,14 +15,14 @@
 #' @param max_clusters Maximum number of clusters to consider
 #' @param method Method to use: "elbow" or "silhouette"
 #' @return A list containing the optimal number of clusters and a plot
+#' @importFrom magick image_data
+#' @importFrom cluster silhouette
+#' @import ggplot2
 #' @export
 find_optimal_clusters <- function(img, max_clusters = 10, method = "elbow") {
-  library(magick)
-  library(cluster)
-  library(ggplot2)
 
   # Convert image to a matrix of RGB values
-  img_array <- as.numeric(image_data(img, channels = "RGB"))
+  img_array <- as.numeric(magick::image_data(img, channels = "RGB"))
   dim(img_array) <- c(prod(dim(img_array)[1:2]), 3)
 
   # Sample data if the image is too large
@@ -47,7 +47,7 @@ find_optimal_clusters <- function(img, max_clusters = 10, method = "elbow") {
 
     # Create elbow plot
     plot_data <- data.frame(k = 1:max_clusters, wss = wss_values)
-    p <- ggplot(plot_data, aes(x = k, y = wss)) +
+    p <- ggplot2::ggplot(plot_data, aes(x = k, y = wss)) +
       geom_line() +
       geom_point() +
       geom_vline(xintercept = elbow_point, linetype = "dashed", color = "red") +
