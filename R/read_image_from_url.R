@@ -15,6 +15,7 @@
 #'
 #' @importFrom jpeg readJPEG
 #' @importFrom png readPNG
+#' @importFrom magick image_read
 #'
 #' @export
 read_image_from_url <- function(path) {
@@ -24,11 +25,13 @@ read_image_from_url <- function(path) {
   utils::download.file(path, tf, mode = "wb", quiet = TRUE)
   on.exit(unlink(tf), add = TRUE)
 
-  switch(
-    file_ext,
-    jpg  = jpeg::readJPEG(tf),
-    jpeg = jpeg::readJPEG(tf),
-    png  = png::readPNG(tf),
-    stop("Unsupported file format. Only PNG and JPG files are supported.")
+  magick::image_read(
+    switch(
+      file_ext,
+      jpg  = jpeg::readJPEG(tf),
+      jpeg = jpeg::readJPEG(tf),
+      png  = png::readPNG(tf),
+      stop("Unsupported file format. Only PNG and JPG files are supported.")
+    )
   )
 }
