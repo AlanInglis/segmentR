@@ -4,12 +4,11 @@
 \alias{merge_similar_colours}
 \title{merge_similar_colours}
 \usage{
-merge_similar_colours(pal_df, deltaE = 5, space = "lab")
+merge_similar_colours(pal, deltaE = 5, space = "lab")
 }
 \arguments{
-\item{pal_df}{A data frame with \strong{at least} two columns
-\emph{\code{hex}} – valid hexadecimal colour strings
-\emph{\code{freq}} – integer pixel counts or weights.}
+\item{pal}{Either a data frame as above or a character/factor vector of
+hex colours.}
 
 \item{deltaE}{Numeric ≥ 0. The maximum CIEDE2000 distance for two colours
 to be considered the same. Values between 2 and 6 are common; default 5.}
@@ -26,9 +25,13 @@ A data frame with columns
 sorted by descending \code{freq}.
 }
 \description{
-Given a data frame of hex colours and their pixel \strong{frequency} counts
-(such as the output of \code{\link[=img_to_palette]{img_to_palette()}} or \code{\link[=get_top_col]{get_top_col()}}),
-this function computes the pair-wise perceptual distances
+Accepts either
+\itemize{
+\item a \strong{data frame} with columns
+– \code{hex}: valid hexadecimal colour strings
+– \code{freq}: integer pixel counts or weights, \strong{or}
+\item a \strong{character vector} of hex strings (duplicates allowed).
+This function computes the pair-wise perceptual distances
 (CIEDE2000) between all colours in the specified colour space
 (Lab by default).
 Single-linkage hierarchical clustering is then applied and the tree is cut
@@ -36,6 +39,7 @@ at height \code{deltaE}.
 All colours that fall within the same cluster are merged; their
 representative colour is the mean hex value returned by
 \code{\link[=avg_hex]{avg_hex()}}, and their frequencies are summed.
+}
 }
 \details{
 Collapse perceptually similar colours in an extracted palette.
@@ -45,11 +49,11 @@ k-means approaches and is deterministic (no random seeds).
 }
 \examples{
 \dontrun{
-img  <- read_image("path/to/image.png")
-pal  <- img_to_palette(img, k = 20)          # initial 20-colour palette
+img  <- segmentR::read_image_from_url("https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png")
+pal  <- segmentR::img_to_palette(img, n = 20)          # initial 20-colour palette
 pal2 <- merge_similar_colours(pal, deltaE = 4)
 print(pal2)
-plot_palette(pal2$avg_color, pal2$freq)      # quick visual check
+plot_palette(pal2$avg_color)
 }
 
 }
