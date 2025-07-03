@@ -7,56 +7,59 @@
 merge_similar_colours(pal, deltaE = 5, space = "lab")
 }
 \arguments{
-\item{pal}{Either a data frame as above or a character/factor vector of
-hex colours.}
+\item{pal}{A data frame or character vector of hex colours. If a data frame, it must contain
+\code{hex} and \code{freq} columns.}
 
-\item{deltaE}{Numeric ≥ 0. The maximum CIEDE2000 distance for two colours
-to be considered the same. Values between 2 and 6 are common; default 5.}
+\item{deltaE}{Numeric ≥ 0. The maximum perceptual distance (ΔE2000) allowed within a cluster.
+Typical values are between 2 and 6. Default is 5.}
 
-\item{space}{Character. Colour space supplied to \strong{farver} for the
-distance calculation (default \code{"lab"}).  Any space recognised by
-\code{farver::decode_colour()} is valid.}
+\item{space}{Character. Colour space used for distance calculation (default: \code{"lab"}).
+Passed to \code{farver::decode_colour()}.}
 }
 \value{
-A data frame with columns
-\emph{\code{group}} – cluster label
-\emph{\code{avg_color}} – representative hex colour per group
-\emph{\code{freq}} – total pixel count per group,
-sorted by descending \code{freq}.
+A data frame with:
+\itemize{
+\item \code{group}: cluster label
+\item \code{avg_color}: mean colour per group (hex)
+\item \code{freq}: total pixel count per group
+Rows are sorted by descending frequency.
+}
 }
 \description{
-Accepts either
+Groups colours that are perceptually close in a specified colour space and merges them.
+Accepts either:
 \itemize{
-\item a \strong{data frame} with columns
-– \code{hex}: valid hexadecimal colour strings
-– \code{freq}: integer pixel counts or weights, \strong{or}
-\item a \strong{character vector} of hex strings (duplicates allowed).
-This function computes the pair-wise perceptual distances
-(CIEDE2000) between all colours in the specified colour space
-(Lab by default).
-Single-linkage hierarchical clustering is then applied and the tree is cut
-at height \code{deltaE}.
-All colours that fall within the same cluster are merged; their
-representative colour is the mean hex value returned by
-\code{\link[=avg_hex]{avg_hex()}}, and their frequencies are summed.
+\item a \strong{data frame} with columns:
+\itemize{
+\item \code{hex}: hexadecimal colour codes
+\item \code{freq}: pixel counts or weights
 }
+\item or a \strong{character vector} of hex codes (duplicates allowed).
+}
+
+Colours are clustered using single-linkage hierarchical clustering with distances
+computed in the chosen space (default: Lab). Clusters are merged by computing
+a weighted average colour using \code{\link[=avg_hex]{avg_hex()}}.
 }
 \details{
-Collapse perceptually similar colours in an extracted palette.
+Collapse perceptually similar colours in a palette using CIEDE2000 distance.
 
-\emph{Perceptual} merging avoids the arbitrary choice of \emph{k} required by
-k-means approaches and is deterministic (no random seeds).
+This perceptual merging avoids the arbitrary choice of \emph{k} in k-means and
+is deterministic (no random seed needed).
 }
 \examples{
-\dontrun{
-img  <- segmentR::read_image_from_url("https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png")
-pal  <- segmentR::img_to_palette(img, n = 20)          # initial 20-colour palette
-pal2 <- merge_similar_colours(pal, deltaE = 4)
-print(pal2)
-plot_palette(pal2$avg_color)
-}
+# Basic example with a hex vector
+hex_vec <- c("#FF0000", "#FE0000", "#00FF00", "#0000FF", "#00FE00")
+merge_similar_colours(hex_vec, deltaE = 3)
+
+# Using an internal image
+img_path <- system.file("extdata", "sample_img.png", package = "segmentR")
+img <- read_image(img_path)
+pal <- img_to_palette(img, n = 15, avg_cols = FALSE)
+merged <- merge_similar_colours(pal, deltaE = 4)
+plot_palette(merged$avg_color)
 
 }
 \seealso{
-\code{\link[=img_to_palette]{img_to_palette()}}, \code{\link[=get_top_col]{get_top_col()}}, \code{\link[=avg_hex]{avg_hex()}}
+\code{\link[=avg_hex]{avg_hex()}}, \code{\link[=img_to_palette]{img_to_palette()}}, \code{\link[=get_top_col]{get_top_col()}}
 }

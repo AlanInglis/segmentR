@@ -1,13 +1,24 @@
 #' plot_segmented
 #'
-#' Visualise the original and segmented images side by side with an optional divider and titles.
+#' Display the original and segmented images side by side using grid graphics.
 #'
-#' @param original_img A \code{magick-image} object representing the original image.
-#' @param segmented_img A \code{magick-image} object representing the segmented image.
-#' @param divider Character. One of \code{"line"} or \code{"none"}. Default is \code{"line"}.
-#' @param show_title Logical. Whether to show image titles above the panels. Default is \code{TRUE}.
+#' @description
+#' Visualise an image alongside its segmented version, with optional titles and a divider line between them.
 #'
-#' @return A side-by-side visual plot of the two images using the \code{grid} graphics system.
+#' @param original_img A `magick-image` object representing the original image.
+#' @param segmented_img A `magick-image` object representing the segmented image.
+#' @param divider Character. Divider style between the images. Either `"line"` (default) or `"none"`.
+#' @param show_title Logical. Show titles above each image? Default is `TRUE`.
+#'
+#' @return This function produces a visual side-by-side plot using the `grid` system. Nothing is returned.
+#'
+#' @examples
+#' img_path <- system.file("extdata", "sample_img.png", package = "segmentR")
+#' img <- read_image(img_path, width = 341, height = 512)
+#' segmented <- segment_image(img, n = 4)
+#' plot_segmented(img, segmented)
+#' img_seg <- draw_border(segmented, edge_color = "red")  # Add border to segments
+#' plot_segmented(img, img_seg)  # Plot with borders
 #'
 #' @importFrom grid grid.newpage pushViewport viewport grid.layout grid.raster grid.text grid.lines popViewport gpar
 #' @importFrom grDevices as.raster

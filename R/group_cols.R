@@ -1,16 +1,23 @@
 #' group_cols
 #'
-#' Group hex colours using k-means clustering in RGB space.
+#' Cluster a set of hex colours into perceptually similar groups using k-means in RGB space.
 #'
-#' @param hex_colors A character vector of hex colour values (e.g., \code{"#FF0000"}).
-#' @param n_clusters Integer. Number of clusters to form. Default is 5.
+#' @description
+#' Converts hex colours to RGB and applies k-means clustering to group visually similar
+#' colours. Returns a data frame mapping each colour to a cluster label.
 #'
-#' @return A data frame with the original hex colours and their assigned group labels.
+#' @param hex_colors A character vector of hex colour values (e.g., `"#FF0000"`).
+#' @param n_clusters Integer. Number of clusters to form (default = 5).
+#'
+#' @return A data frame with:
+#'   * `hex_color`: the original hex code
+#'   * `group`: the assigned cluster label (integer)
 #'
 #' @examples
 #' hex_colors <- c("#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF")
 #' group_cols(hex_colors, n_clusters = 2)
 #'
+#' @seealso [avg_hex()], [get_top_col()]
 #' @importFrom grDevices col2rgb
 #' @importFrom stats kmeans
 #' @export

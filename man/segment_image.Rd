@@ -2,24 +2,30 @@
 % Please edit documentation in R/segment_image.R
 \name{segment_image}
 \alias{segment_image}
-\title{Segment Image Colors}
+\title{segment_image}
 \usage{
 segment_image(img, n_colors = 5)
 }
 \arguments{
-\item{img}{An image object}
+\item{img}{A \code{magick-image} object.}
 
-\item{n_colors}{Number of colors to segment into}
+\item{n_colors}{Integer ≥ 2. Number of colour clusters. Default is 5.}
 }
 \value{
-A segmented image as a numeric array
+A numeric array with the same dimensions as the input image,
+where each pixel is assigned the RGB value of its cluster centroid.
 }
 \description{
-This function segments an image into a specified number of colors using k-means clustering.
+Converts an image into an RGB matrix and uses k-means to cluster pixels into \code{n_colors} groups.
+Each pixel is recoloured using its cluster centroid. The result is returned as a numeric RGB array.
 }
 \details{
-The function takes an image object and converts it into a matrix of RGB values.
-It then applies k-means clustering to group the colours into the specified number of clusters.
-Each pixel in the image is replaced with the color of its corresponding cluster center. T
-he segmented image is returned as a numeric array with the same dimensions as the original image.
+Segment an image into a specified number of dominant colours using k-means clustering.
+}
+\examples{
+img_path <- system.file("extdata", "sample_img.png", package = "segmentR")
+img <- read_image(img_path, width = 300)
+seg <- segment_image(img, n_colors = 2)
+plot_segmented(img, seg)
+
 }

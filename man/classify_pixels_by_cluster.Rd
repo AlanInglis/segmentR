@@ -8,70 +8,74 @@ classify_pixels_by_cluster(
   img,
   palette,
   space = "lab",
-  return = c("factor", "mask", "raster"),
+  output = c("factor", "mask", "raster"),
   cluster = NULL
 )
 }
 \arguments{
-\item{img}{A \emph{magick-image}, file/URL, or an RGB array
-(\verb{height × width × 3}, 0–255 or 0–1).}
+\item{img}{A \code{magick-image} object, image path/URL, or an RGB array (\verb{height × width × 3})}
 
-\item{palette}{Character vector of hex codes \strong{or} data-frame with a
-\code{hex} column (e.g. result of \code{merge_similar_colours()}).}
+\item{palette}{Character vector of hex codes or a data frame with a \code{hex} column}
 
-\item{space}{Colour space for the ΔE calculation (default \code{"lab"}).}
+\item{space}{Character. Colour space to use for comparison (default: \code{"lab"})}
 
-\item{return}{\code{"factor"}, \code{"mask"}, or \code{"raster"} (default \code{"factor"}).}
+\item{output}{Type of output: \code{"factor"}, \code{"mask"}, or \code{"raster"} (default: \code{"factor"})}
 
-\item{cluster}{Cluster identifier when \code{return = "mask"} – may be a hex
-string or a numeric index.}
+\item{cluster}{When \code{output = "mask"}, the cluster to extract (hex code or index)}
 }
 \value{
-An object whose class depends on \code{return} (see \emph{Return types} above).
+Depends on \code{output}:
+\itemize{
+\item \code{"factor"} – matrix of factor hex codes
+\item \code{"mask"} – logical matrix
+\item \code{"raster"} – object of class \code{segmentR_raster}
+}
 }
 \description{
-Assign each pixel in an image to the \strong{nearest} reference colour using
-CIEDE2000 distance (Lab space by default).
+This function assigns pixels to colour clusters based on perceptual distance
+from a reference palette. It supports multiple output types: a factor matrix
+of hex labels, a binary mask for a single cluster, or a custom lightweight
+raster object.
+}
+\details{
+Assign each pixel in an image to the closest reference colour using
+CIEDE2000 distance in Lab colour space.
 }
 \section{Return types}{
 
 \itemize{
-\item \strong{"factor"} (default) – a \verb{height × width} matrix whose elements are
-\emph{factors} labelled by hex codes (one level per palette entry).
-\item \strong{"mask"} – a logical matrix for a single cluster (\code{TRUE} where the pixel
-matches \code{cluster}, \code{FALSE} elsewhere).
-\item \strong{"raster"} – a base-R S3 object of class \strong{\code{segmentR_raster}} containing
-the integer cluster map (\code{data}) plus minimal metadata (\code{nrow}, \code{ncol},
-\code{extent}, \code{crs}).  Helper methods \code{print.segmentR_raster()} and
-\code{plot.segmentR_raster()} are exported for convenience; advanced users can
-coerce \code{data} to a {terra} or {raster} object if needed.
+\item \strong{"factor"} (default) – a \verb{height × width} matrix of factor levels, one per hex code
+\item \strong{"mask"} – a logical matrix identifying pixels in a specified cluster
+\item \strong{"raster"} – a \code{segmentR_raster} S3 object (integer matrix + metadata) with custom print/plot methods
 }
 }
 
 \examples{
-\dontrun{
-img <- read_image_from_url(
-  "https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png")
-img <- white_balance_auto(img, "percentile")
+# Load example image from package
+img_path <- system.file("extdata", "sample_img.png", package = "segmentR")
+img <- read_image(img_path, width = 341, height = 512)
 
-pal_raw   <- img_to_palette(img, k = 20)
-pal_clean <- merge_similar_colours(pal_raw, deltaE = 4)
-pal_hex   <- unique(pal_clean$avg_color)
+# Extract colour palette
+pal <- img_to_palette(img, n = 20, exclude = FALSE)
 
-## Factor matrix
-cl_mat <- classify_pixels_by_cluster(img, pal_hex)
+# Factor matrix of cluster assignments
+cl_mat <- classify_pixels_by_cluster(img, palette = pal)
 table(cl_mat)
+plot_palette(unique(as.vector(cl_mat)))
 
-## Logical mask of the dominant colour
-mask <- classify_pixels_by_cluster(img, pal_hex,
-                                   return  = "mask",
-                                   cluster = pal_hex[1])
-image(mask)
+# Logical mask for the most dominant colour
+mask <- classify_pixels_by_cluster(img,
+                                   palette = pal,
+                                   output = "mask",
+                                   cluster = pal[1])
+image(t(apply(mask, 2, rev)),  # rotate for display
+      col = c("black", "white"),
+      axes = FALSE,
+      asp = 1)
 
-## Lightweight raster
-rast <- classify_pixels_by_cluster(img, pal_hex, return = "raster")
+# Lightweight raster with metadata
+rast <- classify_pixels_by_cluster(img, palette = pal, output = "raster")
 print(rast)
-plot(rast)  # uses plot.segmentR_raster()
-}
+plot(rast, col = pal)
 
 }

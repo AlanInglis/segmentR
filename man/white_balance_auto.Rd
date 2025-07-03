@@ -12,16 +12,34 @@ white_balance_auto(
 )
 }
 \arguments{
-\item{img}{magick image object \emph{or} path/URL.}
+\item{img}{A \code{magick-image} object or a character string (path or URL).}
 
-\item{method}{"greyworld" (default) or "percentile".}
+\item{method}{White-balance method: \code{"greyworld"} (default) or \code{"percentile"}.}
 
-\item{lower, upper}{Quantiles for percentile stretch.}
+\item{lower, upper}{Numeric. Quantile thresholds for \code{"percentile"} method. Defaults are 0.01 and 0.99.}
 }
 \value{
-\if{html}{\out{<div class="sourceCode">}}\preformatted{    magick image object.
-}\if{html}{\out{</div>}}
+A \code{magick-image} object with adjusted white balance.
 }
 \description{
-Automatic grey-world or percentile white-balance correction.
+Adjusts RGB channel intensities to correct for white balance. Two methods are supported:
+\itemize{
+\item \code{"greyworld"} – normalises each channel to the mean of all channels (assumes average scene is grey).
+\item \code{"percentile"} – stretches pixel intensities between specified quantiles per channel.
+}
+
+The corrected image is returned as a \code{magick-image} object.
+}
+\details{
+Apply automatic white-balance correction using either the grey-world or percentile method.
+}
+\examples{
+img <- system.file("extdata", "sample_img.png", package = "segmentR")
+img_balanced <- white_balance_auto(img,
+                                   method = "percentile",
+                                   lower = 0.01,
+                                   upper = 0.3)
+plot(img_balanced)
+
+
 }

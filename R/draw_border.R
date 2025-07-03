@@ -1,14 +1,27 @@
-#' Draw Border on Segmented Image
+#' draw_border
+#'
+#' Add visible borders between colour segments in a segmented image.
 #'
 #' @description
-#' This function draws borders on a segmented image by detecting edges between different segments and allows the user to specify the border color.
+#' Detects edges between segments in an RGB array and overlays a border using
+#' a specified colour. Returns a `magick-image` object with borders drawn.
 #'
-#' @details
-#' The function takes a numeric array representing a segmented image and detects edges between segments. It then draws borders along these edges by setting the edge pixels to a specified color. The resulting image is converted back to a magick-image object and returned.
+#' @param segmented_array A numeric RGB array (`height × width × 3`) representing
+#'   a segmented image.
+#' @param edge_color Colour name or hex code for the borders (default: `"black"`).
 #'
-#' @param segmented_array A numeric array representing the segmented image
-#' @param edge_color A character string specifying the color of the edges (default is "black")
-#' @return A magick-image object with borders drawn
+#' @return A `magick-image` object with segment borders highlighted.
+#'
+#' @examples
+#' # Load and segment example image
+#' img_path <- system.file("extdata", "sample_img.png", package = "segmentR")
+#' img <- read_image(img_path, width = 341, height = 512)
+#' seg <- segment_image(img, n = 6)
+#'
+#' # Add border
+#' bordered <- draw_border(seg, edge_color = "red")
+#' bordered
+#'
 #' @importFrom magick image_read
 #' @importFrom grDevices col2rgb
 #' @export

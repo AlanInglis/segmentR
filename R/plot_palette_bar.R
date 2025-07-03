@@ -1,27 +1,31 @@
 #' plot_palette_bar
 #'
-#' Quick palette visualisation in two styles:
-#' * **Swatch strip** (`type = "swatch"`) – equal-width colour tiles.
-#'   `counts` only affects whether labels show percentages.
-#' * **Bar plot** (`type = "bar"`) – bars whose height equals the pixel
-#'   count (`counts = TRUE`) or a constant (`counts = FALSE`).
+#' Visualise a colour palette using either a swatch strip or a frequency bar plot.
 #'
-#' @param pal   Hex vector or data-frame with `hex` and optional `freq`.
-#' @param counts Logical.  For *bar* controls bar height; for *swatch*
-#'               controls whether percentages appear in the labels.
-#' @param type  `"swatch"` (default) or `"bar"`.
+#' @description
+#' Quick visualisation of colour palettes with two display styles:
+#'
+#' - `"swatch"` (default): Equal-width coloured tiles. If `counts = TRUE`, labels show percentages.
+#' - `"bar"`: Bars whose height reflects frequency (`counts = TRUE`) or are constant height.
+#'
+#' @param pal A character vector of hex colours or a data frame with a `hex` column.
+#'            If `freq` is also provided (in the data frame), it is used to weight bars.
+#' @param counts Logical. If `TRUE`, use frequencies to determine bar heights (in `"bar"` mode)
+#'               or show percentages (in `"swatch"` mode). Default is `TRUE`.
+#' @param type `"swatch"` (default) or `"bar"`.
 #' @param orientation `"horizontal"` (default) or `"vertical"`.
-#' @param show_labels Logical; draw text labels?  Default `TRUE`.
+#' @param show_labels Logical. Whether to display colour labels. Default is `TRUE`.
 #'
-#' @return ggplot object (printed invisibly).
+#' @return A `ggplot` object, printed invisibly.
 #'
 #' @examples
-#' \dontrun{
 #' pal <- c("#FFFFFF", rep("#FED707", 3), "#55ADCD", "#000000")
 #' plot_palette_bar(pal)                          # swatch strip
-#' plot_palette_bar(pal, type = "bar")            # frequency bars
-#' }
+#' plot_palette_bar(pal, orientation = "vertical")  # vertical swatch strip
+#' plot_palette_bar(pal, type = "bar")            # bar plot with frequencies
+#' plot_palette_bar(pal, type = "bar", counts = FALSE)  # uniform-height bars
 #'
+#' @seealso [plot_palette()]
 #' @import ggplot2
 #' @export
 plot_palette_bar <- function(pal,

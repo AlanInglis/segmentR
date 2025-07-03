@@ -1,54 +1,52 @@
 #' merge_similar_colours
 #'
-#' Collapse perceptually similar colours in an extracted palette.
+#' Collapse perceptually similar colours in a palette using CIEDE2000 distance.
 #'
 #' @description
-#' Accepts either
-#' * a **data frame** with columns
-#'   – `hex`: valid hexadecimal colour strings
-#'   – `freq`: integer pixel counts or weights, **or**
-#' * a **character vector** of hex strings (duplicates allowed).
-#' This function computes the pair-wise perceptual distances
-#' (CIEDE2000) between all colours in the specified colour space
-#' (Lab by default).
-#' Single-linkage hierarchical clustering is then applied and the tree is cut
-#' at height `deltaE`.
-#' All colours that fall within the same cluster are merged; their
-#' representative colour is the mean hex value returned by
-#' [`avg_hex()`], and their frequencies are summed.
+#' Groups colours that are perceptually close in a specified colour space and merges them.
+#' Accepts either:
+#' - a **data frame** with columns:
+#'   - `hex`: hexadecimal colour codes
+#'   - `freq`: pixel counts or weights
+#' - or a **character vector** of hex codes (duplicates allowed).
 #'
-#' @param pal Either a data frame as above or a character/factor vector of
-#'   hex colours.
-#' @param deltaE Numeric ≥ 0. The maximum CIEDE2000 distance for two colours
-#'   to be considered the same. Values between 2 and 6 are common; default 5.
-#' @param space Character. Colour space supplied to **farver** for the
-#'   distance calculation (default `"lab"`).  Any space recognised by
-#'   `farver::decode_colour()` is valid.
+#' Colours are clustered using single-linkage hierarchical clustering with distances
+#' computed in the chosen space (default: Lab). Clusters are merged by computing
+#' a weighted average colour using [`avg_hex()`].
 #'
-#' @return A data frame with columns
-#'   *`group`* – cluster label
-#'   *`avg_color`* – representative hex colour per group
-#'   *`freq`* – total pixel count per group,
-#'   sorted by descending `freq`.
+#' @param pal A data frame or character vector of hex colours. If a data frame, it must contain
+#'   `hex` and `freq` columns.
+#' @param deltaE Numeric ≥ 0. The maximum perceptual distance (ΔE2000) allowed within a cluster.
+#'   Typical values are between 2 and 6. Default is 5.
+#' @param space Character. Colour space used for distance calculation (default: `"lab"`).
+#'   Passed to `farver::decode_colour()`.
 #'
-#' @details
-#' *Perceptual* merging avoids the arbitrary choice of *k* required by
-#' k-means approaches and is deterministic (no random seeds).
-#'
-#' @seealso
-#' [`img_to_palette()`], [`get_top_col()`], [`avg_hex()`]
+#' @return A data frame with:
+#'   * `group`: cluster label
+#'   * `avg_color`: mean colour per group (hex)
+#'   * `freq`: total pixel count per group
+#'   Rows are sorted by descending frequency.
 #'
 #' @examples
-#' \dontrun{
-#' img  <- segmentR::read_image_from_url("https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png")
-#' pal  <- segmentR::img_to_palette(img, n = 20)          # initial 20-colour palette
-#' pal2 <- merge_similar_colours(pal, deltaE = 4)
-#' print(pal2)
-#' plot_palette(pal2$avg_color)
-#' }
+#' # Basic example with a hex vector
+#' hex_vec <- c("#FF0000", "#FE0000", "#00FF00", "#0000FF", "#00FE00")
+#' merge_similar_colours(hex_vec, deltaE = 3)
+#'
+#' # Using an internal image
+#' img_path <- system.file("extdata", "sample_img.png", package = "segmentR")
+#' img <- read_image(img_path)
+#' pal <- img_to_palette(img, n = 15, avg_cols = FALSE)
+#' merged <- merge_similar_colours(pal, deltaE = 4)
+#' plot_palette(merged$avg_color)
+#'
+#' @details
+#' This perceptual merging avoids the arbitrary choice of *k* in k-means and
+#' is deterministic (no random seed needed).
+#'
+#' @seealso [avg_hex()], [img_to_palette()], [get_top_col()]
 #'
 #' @importFrom farver decode_colour compare_colour
-#' @importFrom stats   hclust cutree as.dist
+#' @importFrom stats hclust cutree as.dist
 #' @export
 merge_similar_colours <- function(pal,
                                    deltaE = 5,

@@ -1,19 +1,27 @@
 #' plot_palette
 #'
-#' Plot a colour palette from a character vector or a data frame column of hex codes.
+#' Display a simple horizontal strip of colours from a palette.
+#'
+#' @description
+#' This function visualises a colour palette as a sequence of tiles.
+#' The input can be either:
+#'
+#' - A character vector of hex colour strings, or
+#' - A data frame with a specified column containing hex codes.
 #'
 #' @param x A character vector of hex colours, or a data frame.
-#' @param color_col Optional. If \code{x} is a data frame, name of the column containing colours.
+#' @param color_col Optional string. If `x` is a data frame, the name of the column
+#'        containing colour hex codes.
 #'
-#' @return A \code{ggplot2} plot object displaying the colour palette.
+#' @return A `ggplot2` object displaying the palette.
 #'
 #' @examples
 #' # From a vector
 #' plot_palette(c("#FF0000", "#00FF00", "#0000FF"))
 #'
 #' # From a data frame
-#' df <- data.frame(col = c("#FF0000", "#00FF00", "#0000FF"))
-#' plot_palette(df, "col")
+#' df <- data.frame(col = c("#FF0000", "#0000FF", "#00FF00"))
+#' plot_palette(df, color_col = "col")
 #'
 #' @import ggplot2
 #' @export

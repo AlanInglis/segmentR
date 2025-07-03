@@ -1,20 +1,29 @@
-#' Find Optimal Number of Clusters
+#' find_optimal_clusters
+#'
+#' Estimate the optimal number of colour clusters in an image using the elbow or silhouette method.
 #'
 #' @description
-#' This function finds the optimal number of clusters for segmenting an
-#' image using either the elbow method or the silhouette method.
+#' Converts an image to RGB space and applies k-means clustering with varying `k` values
+#' to compute either the within-cluster sum of squares (elbow method) or the average silhouette score.
+#' Returns the estimated optimal `k` and a diagnostic plot.
 #'
-#' @details
-#' The function converts an image to a matrix of RGB values and calculates the
-#' total within-cluster sum of squares (WSS) for different numbers of clusters.
-#' Depending on the chosen method ("elbow" or "silhouette"), it determines the
-#' optimal number of clusters. The elbow method identifies the point where the
-#' WSS starts to decrease less sharply, while the silhouette method calculates
-#' average silhouette scores for different cluster numbers.
-#' @param img An image object
-#' @param max_clusters Maximum number of clusters to consider
-#' @param method Method to use: "elbow" or "silhouette"
-#' @return A list containing the optimal number of clusters and a plot
+#' @param img A `magick-image` object.
+#' @param max_clusters Integer. The maximum number of clusters to test (default: 10).
+#' @param method `"elbow"` (default) or `"silhouette"` – clustering criterion.
+#'
+#' @return A list with:
+#'   * `optimal_clusters`: estimated best number of clusters
+#'   * `plot`: a `ggplot2` object visualising the method result
+#'
+#' @examples
+#' img_path <- system.file("extdata", "sample_img.png", package = "segmentR")
+#' img <- read_image(img_path)
+#'
+#' res <- find_optimal_clusters(img, max_clusters = 8, method = "elbow")
+#' print(res$plot)
+#' res$optimal_clusters
+#'
+#'
 #' @importFrom magick image_data
 #' @importFrom cluster silhouette
 #' @import ggplot2
@@ -84,14 +93,29 @@ find_optimal_clusters <- function(img, max_clusters = 10, method = "elbow") {
 }
 
 
-#' Find Optimal Number of Clusters
+#' find_optimal_clusters_combined
 #'
-#' @param img An image object
-#' @param max_clusters Maximum number of clusters to consider
-#' @return A list containing the optimal number of clusters and a plot
+#' Estimate optimal clusters using both elbow and silhouette methods.
+#'
+#' @description
+#' Calls `find_optimal_clusters()` with both `"elbow"` and `"silhouette"` methods and
+#' returns their suggested cluster counts, as well as the average.
+#'
+#' @param img A `magick-image` object.
+#' @param max_clusters Integer. The maximum number of clusters to test (default: 10).
+#'
+#' @return A list with:
+#'   * `elbow_k`: number of clusters suggested by elbow method
+#'   * `silhouette_k`: number of clusters suggested by silhouette method
+#'   * `avg_k`: average of the two methods
+#'
+#' @examples
+#' img_path <- system.file("extdata", "sample_img.png", package = "segmentR")
+#' img <- read_image(img_path)
+#' find_optimal_clusters_combined(img)
+#'
+#'
 #' @export
-
-
 find_optimal_clusters_combined <- function(img, max_clusters = 10) {
   elbow_result <- find_optimal_clusters(img, max_clusters, method = "elbow")
   silhouette_result <- find_optimal_clusters(img, max_clusters, method = "silhouette")

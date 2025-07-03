@@ -1,15 +1,30 @@
 #' img_to_palette
 #'
-#' Generate a colour palette from an image based on the most frequent colours.
+#' Extract a simplified colour palette from an image using frequency and optional clustering.
 #'
-#' @param img magick image object *or* path/URL to the image.
-#' @param n Integer. Number of top colours to extract. Default is NULL (all).
-#' @param avg_cols Logical. Whether to average colours into clusters. Default is FALSE.
-#' @param exclude Logical. Whether to exclude near-black/white shades. Default is FALSE.
-#' @param n_clusters Integer or NULL. Number of clusters to use for averaging. If NULL, clustering is skipped.
-#' @param custom_exclude Optional character vector of hex colours to exclude.
+#' @description
+#' Generates a colour palette by extracting the most common colours from an image.
+#' Supports optional removal of near-white/black shades and grouping via k-means
+#' clustering. Returns either raw hex values or perceptually averaged colours.
+#'
+#' @param img A `magick-image` object, or a character path/URL to an image file.
+#' @param n Integer. Number of top colours to extract. Default is `NULL` (return all).
+#' @param avg_cols Logical. Whether to average colours into clusters (`FALSE` by default).
+#' @param exclude Logical. Whether to exclude near-black and near-white shades (`FALSE` by default).
+#' @param n_clusters Integer or `NULL`. Number of clusters to use for averaging (if `avg_cols = TRUE`).
+#' @param custom_exclude Optional character vector of hex colours to exclude manually.
+#'
+#' @return A character vector of hex codes:
+#'   * If `avg_cols = TRUE`, returns averaged colours (`avg_color`)
+#'   * Otherwise, returns the most frequent raw colours (`hex`)
+#'
+#' @examples
+#' img_path <- system.file("extdata", "sample_img.png", package = "segmentR")
+#' img <- read_image(img_path)
+#' img_to_palette(img, n = 6)
+#'
+#' @seealso [get_top_col()], [exclude_shades()], [plot_palette()]
 #' @importFrom magick image_read
-#' @return A character vector of hex codes representing the palette.
 #' @export
 img_to_palette <- function(img,
                             n = NULL,

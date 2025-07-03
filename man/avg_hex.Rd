@@ -7,17 +7,30 @@
 avg_hex(df, hex_col = "hex", group_col = "group")
 }
 \arguments{
-\item{df}{A data frame with hex colour values and grouping labels.}
+\item{df}{A data frame containing at least two columns: one with hexadecimal
+colour values and one with group labels.}
 
-\item{hex_col}{Character. Name of the column containing hex values.}
+\item{hex_col}{Character string. The name of the column in \code{df} containing
+hex colour values (e.g., \code{"#FF0000"}).}
 
-\item{group_col}{Character. Name of the column containing group labels.}
+\item{group_col}{Character string. The name of the column in \code{df} containing
+group labels (e.g., cluster assignments).}
 }
 \value{
-A data frame with columns: \code{group}, \code{avg_color}, and \code{freq}.
+A data frame with columns:
+\itemize{
+\item \code{group} – group label
+\item \code{avg_color} – average hex colour per group
+\item \code{freq} – number of rows per group
+}
 }
 \description{
-Compute the average hex colour per group.
+Given a data frame of hex colours and group labels, this function calculates the
+average RGB colour per group and returns a summary table. The output includes
+the group ID, averaged colour (as hex), and the number of observations per group.
+}
+\details{
+Compute the average hexadecimal colour for each group.
 }
 \examples{
 df <- data.frame(

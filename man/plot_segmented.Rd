@@ -16,13 +16,25 @@ plot_segmented(
 
 \item{segmented_img}{A \code{magick-image} object representing the segmented image.}
 
-\item{divider}{Character. One of \code{"line"} or \code{"none"}. Default is \code{"line"}.}
+\item{divider}{Character. Divider style between the images. Either \code{"line"} (default) or \code{"none"}.}
 
-\item{show_title}{Logical. Whether to show image titles above the panels. Default is \code{TRUE}.}
+\item{show_title}{Logical. Show titles above each image? Default is \code{TRUE}.}
 }
 \value{
-A side-by-side visual plot of the two images using the \code{grid} graphics system.
+This function produces a visual side-by-side plot using the \code{grid} system. Nothing is returned.
 }
 \description{
-Visualise the original and segmented images side by side with an optional divider and titles.
+Visualise an image alongside its segmented version, with optional titles and a divider line between them.
+}
+\details{
+Display the original and segmented images side by side using grid graphics.
+}
+\examples{
+img_path <- system.file("extdata", "sample_img.png", package = "segmentR")
+img <- read_image(img_path, width = 341, height = 512)
+segmented <- segment_image(img, n = 4)
+plot_segmented(img, segmented)
+img_seg <- draw_border(segmented, edge_color = "red")  # Add border to segments
+plot_segmented(img, img_seg)  # Plot with borders
+
 }

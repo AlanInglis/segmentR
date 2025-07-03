@@ -15,24 +15,48 @@ get_top_col(
 )
 }
 \arguments{
-\item{img}{Character (file path/URL) or magick image object or array.}
+\item{img}{An image input. Can be a file path, URL, \code{magick-image} object, RGB array (\verb{height × width × 3}), or \code{pixmapRGB}.}
 
-\item{n}{Integer. Number of top colours to extract. Default is NULL (returns all).}
+\item{n}{Integer. Number of top colours to return. If \code{NULL}, returns all (after exclusions).}
 
-\item{exclude}{Logical. Exclude near-black and near-white colours. Default is TRUE.}
+\item{exclude}{Logical. If \code{TRUE} (default), removes near-black and near-white tones.}
 
-\item{sig}{Integer. Decimal places to round percentage values. Default is 4.}
+\item{sig}{Integer. Decimal places to round the colour percentage values. Default is 4.}
 
-\item{avg_cols}{Logical. Whether to average colours by k-means grouping. Default is TRUE.}
+\item{avg_cols}{Logical. If \code{TRUE} (default), similar colours are grouped via k-means.}
 
-\item{n_clusters}{Integer or NULL. Number of clusters for grouping if \code{avg_cols = TRUE}. If NULL, clustering is skipped. Default is 5.}
+\item{n_clusters}{Integer or \code{NULL}. Number of clusters to use if \code{avg_cols = TRUE}. Default is 5.}
 
-\item{custom_exclude}{Optional character vector of hex colours to exclude.}
+\item{custom_exclude}{Optional vector of hex colours to exclude manually.}
 }
 \value{
-A data frame with hex codes, frequency, percentage, and optionally average colours.
+A data frame with one row per extracted colour. Columns:
+\itemize{
+\item \code{hex} – hex code of the colour
+\item \code{freq} – number of pixels with that colour
+\item \code{col_percent} – percentage of total pixels
+\item \code{avg_color} – averaged colour per group (if \code{avg_cols = TRUE})
+}
 }
 \description{
-Extract the top colours from an image file (local, URL, or magick image object),
-with optional exclusion of black/white shades and colour grouping via k-means clustering.
+Computes a frequency table of colours present in an image. Supports optional exclusion of
+near-black/white tones, rounding of percentages, and perceptual colour grouping via k-means.
+Input can be a local file, URL, \code{magick-image}, RGB array, or \code{pixmapRGB} object.
+}
+\details{
+Extract the most frequent colours from an image, optionally grouping similar shades.
+}
+\examples{
+# Use internal image
+img_path <- system.file("extdata", "sample_img.png", package = "segmentR")
+img <- read_image(img_path)
+# Extract top colours
+get_top_col(img, n = 5, n_clusters = 3, exclude = TRUE)
+# Without exclusion and clustering
+get_top_col(img, n = 5, exclude = FALSE, avg_cols = FALSE)
+
+
+}
+\seealso{
+\code{\link[=exclude_shades]{exclude_shades()}}, \code{\link[=avg_hex]{avg_hex()}}, \code{\link[=img_to_palette]{img_to_palette()}}
 }

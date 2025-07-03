@@ -7,40 +7,44 @@
 colour_diversity(x, measure = c("shannon", "gini", "evenness"))
 }
 \arguments{
-\item{x}{A colour source: magick-image, file/URL, RGB array,
-factor matrix, or \code{segmentR_raster}.}
+\item{x}{A colour source: \code{magick-image}, file/URL path, RGB array,
+factor matrix, or a \code{segmentR_raster} object.}
 
-\item{measure}{One or more of \code{"shannon"}, \code{"gini"}, \code{"evenness"}.
-Default returns all three.}
+\item{measure}{Character vector specifying one or more metrics to compute.
+Options are \code{"shannon"}, \code{"gini"}, and \code{"evenness"}. Defaults to all three.}
 }
 \value{
-A named numeric vector containing the requested metric(s).
+A named numeric vector with the requested metric(s).
 }
 \description{
-Quantify colour diversity in an image or cluster map using one or more of:
+Computes one or more diversity metrics based on the frequency of colours
+in an image or cluster assignment. Supports:
 \itemize{
-\item \strong{Shannon entropy}  \eqn{H = -\sum p_i \ln p_i}
-\item \strong{Gini–Simpson}    \eqn{G = 1 - \sum p_i^2}
-\item \strong{Pielou evenness} \eqn{J = H / \ln(K)}
+\item \strong{Shannon entropy}: \eqn{H = -\sum p_i \ln p_i}
+\item \strong{Gini–Simpson index}: \eqn{G = 1 - \sum p_i^2}
+\item \strong{Pielou evenness}: \eqn{J = H / \ln(K)}
 }
+
+where \eqn{p_i} is the proportion of pixels in colour \emph{i} and \emph{K} is the
+number of distinct colours. Supports both raw image data and cluster maps.
 }
 \details{
-where \eqn{p_i} is the proportion of pixels in colour \emph{i} and \emph{K} is the
-number of distinct colours.
+Quantify colour diversity in an image or cluster map using common ecological indices.
 }
 \examples{
-\dontrun{
-img <- read_image_from_url(
-  "https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png")
-img <- white_balance_auto(img, "percentile")
+# Load example image
+img_path <- system.file("extdata", "sample_img.png", package = "segmentR")
+img <- read_image(img_path, width = 341, height = 512)
 
 # Whole-image diversity
 colour_diversity(img)
 
-# Diversity of a classified cluster map
-pal <- img_to_palette(img, k = 15)
-cl  <- classify_pixels_by_cluster(img, pal, return = "factor")
+# Diversity of clustered image
+pal <- img_to_palette(img, n = 12)
+cl  <- classify_pixels_by_cluster(img, pal, output = "factor")
 colour_diversity(cl, c("shannon", "evenness"))
-}
 
+}
+\seealso{
+\code{\link[=classify_pixels_by_cluster]{classify_pixels_by_cluster()}}, \code{\link[=segment_image]{segment_image()}}
 }

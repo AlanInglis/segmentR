@@ -7,49 +7,47 @@
 palette_contrast(pal, against = c("white", "black"), pairwise = FALSE)
 }
 \arguments{
-\item{pal}{Character vector of hex colours \strong{or} data-frame with a
-\code{hex} column (e.g. output of \code{merge_similar_colours()}).}
+\item{pal}{A character vector of hex colour codes or a data frame with a \code{hex} column.}
 
-\item{against}{Background(s) to test: \code{"white"}, \code{"black"}, or both.}
+\item{against}{Background colour(s) to test: \code{"white"}, \code{"black"}, or both (default).}
 
-\item{pairwise}{Logical.  If \code{TRUE}, also return the full contrast matrix.}
+\item{pairwise}{Logical. If \code{TRUE}, also return a symmetric matrix of contrast ratios
+between every pair of colours in the palette.}
 }
 \value{
-If \code{pairwise = FALSE} (default) a data-frame with columns
-\code{hex}, \code{contrast_white}, \code{contrast_black}, \code{min_contrast}.
-If \code{pairwise = TRUE} a list with two elements:
+If \code{pairwise = FALSE} (default), returns a data frame with:
 \itemize{
-\item \code{summary} – the data-frame above;
-\item \code{matrix}  – numeric contrast matrix (rownames/colnames = palette hex).
+\item \code{hex}: the input colour
+\item \code{contrast_white}: contrast vs. white (if requested)
+\item \code{contrast_black}: contrast vs. black (if requested)
+\item \code{min_contrast}: the lower of the two
+}
+
+If \code{pairwise = TRUE}, returns a list with:
+\itemize{
+\item \code{summary}: the data frame above
+\item \code{matrix}: a symmetric matrix of contrast ratios between all colour pairs
 }
 }
 \description{
-Compute WCAG 2.2 contrast ratios for every colour in a palette.
+Calculates contrast ratios between each colour and a background (white, black, or both)
+according to the WCAG 2.2 formula:
+\deqn{C = (L_{bright} + 0.05) / (L_{dark} + 0.05)}
+where \eqn{L} is the relative luminance computed from linearised sRGB values.
+Optionally, the function can return the full pairwise contrast matrix.
 }
 \details{
-The function follows the WCAG 2.2 formula:
-\itemize{
-\item linearise sRGB → relative luminance \(L\);
-\item contrast ratio \(C = (L_bright+0.05) / (L_dark+0.05)\).
-Values range from \strong{1} (identical colours) to \strong{21} (black v. white).
-}
-
-Two use–cases are covered:
-\enumerate{
-\item \strong{Fixed background check} – choose \code{against = "white"}, \code{"black"},
-or both (default).  Returns a data-frame with a row per palette entry and
-columns \code{contrast_white}, \code{contrast_black}, and \code{min_contrast}.
-\item \strong{Pair-wise matrix} – set \code{pairwise = TRUE} to receive the full
-\(K * K\) symmetric matrix of contrasts between palette colours.
-}
+Compute WCAG 2.2 contrast ratios for colours in a palette.
 }
 \examples{
-\dontrun{
 pal <- c("#FFFFFF", "#FED707", "#55ADCD", "#000000")
 palette_contrast(pal)
 
-## Pair-wise view
+# Pairwise contrast matrix
 pc <- palette_contrast(pal, pairwise = TRUE)
 pc$matrix
+
 }
+\seealso{
+\code{\link[=img_to_palette]{img_to_palette()}}, \code{\link[=merge_similar_colours]{merge_similar_colours()}}
 }

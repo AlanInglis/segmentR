@@ -1,51 +1,40 @@
-################################################################################
-## palette_contrast.R
-## ---------------------------------------------------------------------------
-## WCAG 2.2 contrast ratios for a palette
-## * Against fixed backgrounds (white and/or black)
-## * Optional full pair-wise matrix
-##
-## No dependencies beyond base R.
-################################################################################
-
 #' palette_contrast
 #'
-#' Compute WCAG 2.2 contrast ratios for every colour in a palette.
+#' Compute WCAG 2.2 contrast ratios for colours in a palette.
 #'
-#' @details
-#' The function follows the WCAG 2.2 formula:
-#' * linearise sRGB → relative luminance \(L\);
-#' * contrast ratio \(C = (L_bright+0.05) / (L_dark+0.05)\).
-#' Values range from **1** (identical colours) to **21** (black v. white).
+#' @description
+#' Calculates contrast ratios between each colour and a background (white, black, or both)
+#' according to the WCAG 2.2 formula:
+#' \deqn{C = (L_{bright} + 0.05) / (L_{dark} + 0.05)}
+#' where \eqn{L} is the relative luminance computed from linearised sRGB values.
+#' Optionally, the function can return the full pairwise contrast matrix.
 #'
-#' Two use–cases are covered:
+#' @param pal A character vector of hex colour codes or a data frame with a `hex` column.
+#' @param against Background colour(s) to test: `"white"`, `"black"`, or both (default).
+#' @param pairwise Logical. If `TRUE`, also return a symmetric matrix of contrast ratios
+#'   between every pair of colours in the palette.
 #'
-#' 1. **Fixed background check** – choose `against = "white"`, `"black"`,
-#'    or both (default).  Returns a data-frame with a row per palette entry and
-#'    columns `contrast_white`, `contrast_black`, and `min_contrast`.
-#' 2. **Pair-wise matrix** – set `pairwise = TRUE` to receive the full
-#'    \(K * K\) symmetric matrix of contrasts between palette colours.
+#' @return
+#' If `pairwise = FALSE` (default), returns a data frame with:
+#' - `hex`: the input colour
+#' - `contrast_white`: contrast vs. white (if requested)
+#' - `contrast_black`: contrast vs. black (if requested)
+#' - `min_contrast`: the lower of the two
 #'
-#' @param pal       Character vector of hex colours **or** data-frame with a
-#'                  `hex` column (e.g. output of `merge_similar_colours()`).
-#' @param against   Background(s) to test: `"white"`, `"black"`, or both.
-#' @param pairwise  Logical.  If `TRUE`, also return the full contrast matrix.
-#'
-#' @return If `pairwise = FALSE` (default) a data-frame with columns
-#'   `hex`, `contrast_white`, `contrast_black`, `min_contrast`.
-#'   If `pairwise = TRUE` a list with two elements:
-#'   * `summary` – the data-frame above;
-#'   * `matrix`  – numeric contrast matrix (rownames/colnames = palette hex).
+#' If `pairwise = TRUE`, returns a list with:
+#' - `summary`: the data frame above
+#' - `matrix`: a symmetric matrix of contrast ratios between all colour pairs
 #'
 #' @examples
-#' \dontrun{
 #' pal <- c("#FFFFFF", "#FED707", "#55ADCD", "#000000")
 #' palette_contrast(pal)
 #'
-#' ## Pair-wise view
+#' # Pairwise contrast matrix
 #' pc <- palette_contrast(pal, pairwise = TRUE)
 #' pc$matrix
-#' }
+#'
+#' @seealso [img_to_palette()], [merge_similar_colours()]
+#' @importFrom grDevices col2rgb
 #' @export
 palette_contrast <- function(pal,
                              against  = c("white", "black"),

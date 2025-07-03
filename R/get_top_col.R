@@ -1,20 +1,41 @@
 #' get_top_col
 #'
-#' Extract the top colours from an image file (local, URL, or magick image object),
-#' with optional exclusion of black/white shades and colour grouping via k-means clustering.
+#' Extract the most frequent colours from an image, optionally grouping similar shades.
 #'
-#' @param img Character (file path/URL) or magick image object or array.
-#' @param n Integer. Number of top colours to extract. Default is NULL (returns all).
-#' @param exclude Logical. Exclude near-black and near-white colours. Default is TRUE.
-#' @param sig Integer. Decimal places to round percentage values. Default is 4.
-#' @param avg_cols Logical. Whether to average colours by k-means grouping. Default is TRUE.
-#' @param n_clusters Integer or NULL. Number of clusters for grouping if \code{avg_cols = TRUE}. If NULL, clustering is skipped. Default is 5.
-#' @param custom_exclude Optional character vector of hex colours to exclude.
+#' @description
+#' Computes a frequency table of colours present in an image. Supports optional exclusion of
+#' near-black/white tones, rounding of percentages, and perceptual colour grouping via k-means.
+#' Input can be a local file, URL, `magick-image`, RGB array, or `pixmapRGB` object.
+#'
+#' @param img An image input. Can be a file path, URL, `magick-image` object, RGB array (`height × width × 3`), or `pixmapRGB`.
+#' @param n Integer. Number of top colours to return. If `NULL`, returns all (after exclusions).
+#' @param exclude Logical. If `TRUE` (default), removes near-black and near-white tones.
+#' @param sig Integer. Decimal places to round the colour percentage values. Default is 4.
+#' @param avg_cols Logical. If `TRUE` (default), similar colours are grouped via k-means.
+#' @param n_clusters Integer or `NULL`. Number of clusters to use if `avg_cols = TRUE`. Default is 5.
+#' @param custom_exclude Optional vector of hex colours to exclude manually.
+#'
+#' @return A data frame with one row per extracted colour. Columns:
+#'   * `hex` – hex code of the colour
+#'   * `freq` – number of pixels with that colour
+#'   * `col_percent` – percentage of total pixels
+#'   * `avg_color` – averaged colour per group (if `avg_cols = TRUE`)
+#'
+#' @examples
+#' # Use internal image
+#' img_path <- system.file("extdata", "sample_img.png", package = "segmentR")
+#' img <- read_image(img_path)
+#' # Extract top colours
+#' get_top_col(img, n = 5, n_clusters = 3, exclude = TRUE)
+#' # Without exclusion and clustering
+#' get_top_col(img, n = 5, exclude = FALSE, avg_cols = FALSE)
+#'
+#'
+#' @seealso [exclude_shades()], [avg_hex()], [img_to_palette()]
 #' @importFrom pixmap pixmapRGB
 #' @importFrom magick image_data
-#' @return A data frame with hex codes, frequency, percentage, and optionally average colours.
+#' @importFrom grDevices rgb
 #' @export
-
 get_top_col <- function(img,
                         n = NULL,
                         exclude = TRUE,

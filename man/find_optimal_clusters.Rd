@@ -2,29 +2,39 @@
 % Please edit documentation in R/find_optimal_clusters.R
 \name{find_optimal_clusters}
 \alias{find_optimal_clusters}
-\title{Find Optimal Number of Clusters}
+\title{find_optimal_clusters}
 \usage{
 find_optimal_clusters(img, max_clusters = 10, method = "elbow")
 }
 \arguments{
-\item{img}{An image object}
+\item{img}{A \code{magick-image} object.}
 
-\item{max_clusters}{Maximum number of clusters to consider}
+\item{max_clusters}{Integer. The maximum number of clusters to test (default: 10).}
 
-\item{method}{Method to use: "elbow" or "silhouette"}
+\item{method}{\code{"elbow"} (default) or \code{"silhouette"} – clustering criterion.}
 }
 \value{
-A list containing the optimal number of clusters and a plot
+A list with:
+\itemize{
+\item \code{optimal_clusters}: estimated best number of clusters
+\item \code{plot}: a \code{ggplot2} object visualising the method result
+}
 }
 \description{
-This function finds the optimal number of clusters for segmenting an
-image using either the elbow method or the silhouette method.
+Converts an image to RGB space and applies k-means clustering with varying \code{k} values
+to compute either the within-cluster sum of squares (elbow method) or the average silhouette score.
+Returns the estimated optimal \code{k} and a diagnostic plot.
 }
 \details{
-The function converts an image to a matrix of RGB values and calculates the
-total within-cluster sum of squares (WSS) for different numbers of clusters.
-Depending on the chosen method ("elbow" or "silhouette"), it determines the
-optimal number of clusters. The elbow method identifies the point where the
-WSS starts to decrease less sharply, while the silhouette method calculates
-average silhouette scores for different cluster numbers.
+Estimate the optimal number of colour clusters in an image using the elbow or silhouette method.
+}
+\examples{
+img_path <- system.file("extdata", "sample_img.png", package = "segmentR")
+img <- read_image(img_path)
+
+res <- find_optimal_clusters(img, max_clusters = 8, method = "elbow")
+print(res$plot)
+res$optimal_clusters
+
+
 }

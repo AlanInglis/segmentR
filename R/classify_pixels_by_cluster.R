@@ -1,55 +1,58 @@
 #' classify_pixels_by_cluster
 #'
-#' Assign each pixel in an image to the **nearest** reference colour using
-#' CIEDE2000 distance (Lab space by default).
+#' Assign each pixel in an image to the closest reference colour using
+#' CIEDE2000 distance in Lab colour space.
+#'
+#' @description
+#' This function assigns pixels to colour clusters based on perceptual distance
+#' from a reference palette. It supports multiple output types: a factor matrix
+#' of hex labels, a binary mask for a single cluster, or a custom lightweight
+#' raster object.
 #'
 #' @section Return types:
-#' * **"factor"** (default) – a `height × width` matrix whose elements are
-#'   *factors* labelled by hex codes (one level per palette entry).
-#' * **"mask"** – a logical matrix for a single cluster (`TRUE` where the pixel
-#'   matches `cluster`, `FALSE` elsewhere).
-#' * **"raster"** – a base-R S3 object of class **`segmentR_raster`** containing
-#'   the integer cluster map (`data`) plus minimal metadata (`nrow`, `ncol`,
-#'   `extent`, `crs`).  Helper methods `print.segmentR_raster()` and
-#'   `plot.segmentR_raster()` are exported for convenience; advanced users can
-#'   coerce `data` to a {terra} or {raster} object if needed.
+#' * **"factor"** (default) – a `height × width` matrix of factor levels, one per hex code
+#' * **"mask"** – a logical matrix identifying pixels in a specified cluster
+#' * **"raster"** – a `segmentR_raster` S3 object (integer matrix + metadata) with custom print/plot methods
 #'
-#' @param img      A *magick-image*, file/URL, or an RGB array
-#'                 (`height × width × 3`, 0–255 or 0–1).
-#' @param palette  Character vector of hex codes **or** data-frame with a
-#'                 `hex` column (e.g. result of `merge_similar_colours()`).
-#' @param space    Colour space for the ΔE calculation (default `"lab"`).
-#' @param return   `"factor"`, `"mask"`, or `"raster"` (default `"factor"`).
-#' @param cluster  Cluster identifier when `return = "mask"` – may be a hex
-#'                 string or a numeric index.
+#' @param img A `magick-image` object, image path/URL, or an RGB array (`height × width × 3`)
+#' @param palette Character vector of hex codes or a data frame with a `hex` column
+#' @param space Character. Colour space to use for comparison (default: `"lab"`)
+#' @param output Type of output: `"factor"`, `"mask"`, or `"raster"` (default: `"factor"`)
+#' @param cluster When `output = "mask"`, the cluster to extract (hex code or index)
 #'
-#' @return An object whose class depends on `return` (see *Return types* above).
+#' @return
+#' Depends on `output`:
+#' * `"factor"` – matrix of factor hex codes
+#' * `"mask"` – logical matrix
+#' * `"raster"` – object of class `segmentR_raster`
 #'
 #' @examples
-#' \dontrun{
-#' img <- read_image_from_url(
-#'   "https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png")
-#' img <- white_balance_auto(img, "percentile")
+#' # Load example image from package
+#' img_path <- system.file("extdata", "sample_img.png", package = "segmentR")
+#' img <- read_image(img_path, width = 341, height = 512)
 #'
-#' pal_raw   <- img_to_palette(img, k = 20)
-#' pal_clean <- merge_similar_colours(pal_raw, deltaE = 4)
-#' pal_hex   <- unique(pal_clean$avg_color)
+#' # Extract colour palette
+#' pal <- img_to_palette(img, n = 20, exclude = FALSE)
 #'
-#' ## Factor matrix
-#' cl_mat <- classify_pixels_by_cluster(img, pal_hex)
+#' # Factor matrix of cluster assignments
+#' cl_mat <- classify_pixels_by_cluster(img, palette = pal)
 #' table(cl_mat)
+#' plot_palette(unique(as.vector(cl_mat)))
 #'
-#' ## Logical mask of the dominant colour
-#' mask <- classify_pixels_by_cluster(img, pal_hex,
-#'                                    return  = "mask",
-#'                                    cluster = pal_hex[1])
-#' image(mask)
+#' # Logical mask for the most dominant colour
+#' mask <- classify_pixels_by_cluster(img,
+#'                                    palette = pal,
+#'                                    output = "mask",
+#'                                    cluster = pal[1])
+#' image(t(apply(mask, 2, rev)),  # rotate for display
+#'       col = c("black", "white"),
+#'       axes = FALSE,
+#'       asp = 1)
 #'
-#' ## Lightweight raster
-#' rast <- classify_pixels_by_cluster(img, pal_hex, return = "raster")
+#' # Lightweight raster with metadata
+#' rast <- classify_pixels_by_cluster(img, palette = pal, output = "raster")
 #' print(rast)
-#' plot(rast)  # uses plot.segmentR_raster()
-#' }
+#' plot(rast, col = pal)
 #'
 #' @importFrom magick image_read image_data
 #' @importFrom farver decode_colour convert_colour compare_colour
@@ -57,10 +60,10 @@
 classify_pixels_by_cluster <- function(img,
                                        palette,
                                        space   = "lab",
-                                       return  = c("factor", "mask", "raster"),
+                                       output  = c("factor", "mask", "raster"),
                                        cluster = NULL) {
 
-  return <- match.arg(return)
+  output <- match.arg(output)
 
   if (!requireNamespace("farver", quietly = TRUE))
     stop("Package 'farver' is required.", call. = FALSE)
@@ -102,21 +105,21 @@ classify_pixels_by_cluster <- function(img,
   cl_mat  <- matrix(nearest, nrow = h, ncol = w, byrow = FALSE)
 
   ## ---- assemble requested output ----------------------------------------------
-  if (return == "factor") {
+  if (output == "factor") {
     fac <- factor(cl_mat, levels = seq_along(pal_hex), labels = pal_hex)
     dim(fac) <- c(h, w)                                            # keep matrix shape
     return(fac)
   }
 
-  if (return == "mask") {
+  if (output == "mask") {
     if (is.null(cluster))
-      stop("Supply `cluster` when return = 'mask'.", call. = FALSE)
+      stop("Supply `cluster` when output = 'mask'.", call. = FALSE)
     if (is.character(cluster))
       cluster <- match(toupper(cluster), pal_hex)
     return(cl_mat == as.integer(cluster))
   }
 
-  ## return == "raster"  (base-R lightweight object) -----------------------------
+  ## output == "raster"  (base-R lightweight object) -----------------------------
   rast <- list(
     data   = cl_mat,                           # integer matrix
     nrow   = h,

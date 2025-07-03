@@ -1,12 +1,23 @@
 #' avg_hex
 #'
-#' Compute the average hex colour per group.
+#' Compute the average hexadecimal colour for each group.
 #'
-#' @param df A data frame with hex colour values and grouping labels.
-#' @param hex_col Character. Name of the column containing hex values.
-#' @param group_col Character. Name of the column containing group labels.
+#' @description
+#' Given a data frame of hex colours and group labels, this function calculates the
+#' average RGB colour per group and returns a summary table. The output includes
+#' the group ID, averaged colour (as hex), and the number of observations per group.
 #'
-#' @return A data frame with columns: \code{group}, \code{avg_color}, and \code{freq}.
+#' @param df A data frame containing at least two columns: one with hexadecimal
+#'   colour values and one with group labels.
+#' @param hex_col Character string. The name of the column in `df` containing
+#'   hex colour values (e.g., `"#FF0000"`).
+#' @param group_col Character string. The name of the column in `df` containing
+#'   group labels (e.g., cluster assignments).
+#'
+#' @return A data frame with columns:
+#'   * `group` – group label
+#'   * `avg_color` – average hex colour per group
+#'   * `freq` – number of rows per group
 #'
 #' @examples
 #' df <- data.frame(
@@ -29,7 +40,10 @@ avg_hex <- function(df, hex_col = "hex", group_col = "group") {
   average_hex <- function(hex_vals) {
     rgb_matrix <- grDevices::col2rgb(hex_vals)
     mean_rgb <- rowMeans(rgb_matrix)
-    grDevices::rgb(mean_rgb[1], mean_rgb[2], mean_rgb[3], maxColorValue = 255)
+    grDevices::rgb(red = mean_rgb[1],
+                   green = mean_rgb[2],
+                   blue = mean_rgb[3],
+                   maxColorValue = 255)
   }
 
   # Compute group frequency

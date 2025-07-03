@@ -1,51 +1,41 @@
-###############################################################################
-## colour_diversity.R
-## ---------------------------------------------------------------------------
-## Compute three common diversity metrics for colour compositions:
-##   * Shannon entropy (richness × evenness)
-##   * Gini–Simpson index (probability of difference)
-##   * Pielou’s evenness (entropy normalised by richness)
-##
-## Works on:
-##   • magick images  (object or file/URL)
-##   • RGB arrays     (height × width × 3, 0–255 or 0–1)
-##   • factor/char matrices from classify_pixels_by_cluster()
-##   • segmentR_raster objects
-###############################################################################
-
 #' colour_diversity
 #'
-#' Quantify colour diversity in an image or cluster map using one or more of:
-#' * **Shannon entropy**  \eqn{H = -\sum p_i \ln p_i}
-#' * **Gini–Simpson**    \eqn{G = 1 - \sum p_i^2}
-#' * **Pielou evenness** \eqn{J = H / \ln(K)}
+#' Quantify colour diversity in an image or cluster map using common ecological indices.
+#'
+#' @description
+#' Computes one or more diversity metrics based on the frequency of colours
+#' in an image or cluster assignment. Supports:
+#'
+#' - **Shannon entropy**: \eqn{H = -\sum p_i \ln p_i}
+#' - **Gini–Simpson index**: \eqn{G = 1 - \sum p_i^2}
+#' - **Pielou evenness**: \eqn{J = H / \ln(K)}
 #'
 #' where \eqn{p_i} is the proportion of pixels in colour *i* and *K* is the
-#' number of distinct colours.
+#' number of distinct colours. Supports both raw image data and cluster maps.
 #'
-#' @param x        A colour source: magick-image, file/URL, RGB array,
-#'                 factor matrix, or `segmentR_raster`.
-#' @param measure  One or more of `"shannon"`, `"gini"`, `"evenness"`.
-#'                 Default returns all three.
+#' @param x A colour source: `magick-image`, file/URL path, RGB array,
+#'   factor matrix, or a `segmentR_raster` object.
+#' @param measure Character vector specifying one or more metrics to compute.
+#'   Options are `"shannon"`, `"gini"`, and `"evenness"`. Defaults to all three.
 #'
-#' @return A named numeric vector containing the requested metric(s).
+#' @return A named numeric vector with the requested metric(s).
 #'
 #' @examples
-#' \dontrun{
-#' img <- read_image_from_url(
-#'   "https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png")
-#' img <- white_balance_auto(img, "percentile")
+#' # Load example image
+#' img_path <- system.file("extdata", "sample_img.png", package = "segmentR")
+#' img <- read_image(img_path, width = 341, height = 512)
 #'
 #' # Whole-image diversity
 #' colour_diversity(img)
 #'
-#' # Diversity of a classified cluster map
-#' pal <- img_to_palette(img, k = 15)
-#' cl  <- classify_pixels_by_cluster(img, pal, return = "factor")
+#' # Diversity of clustered image
+#' pal <- img_to_palette(img, n = 12)
+#' cl  <- classify_pixels_by_cluster(img, pal, output = "factor")
 #' colour_diversity(cl, c("shannon", "evenness"))
-#' }
 #'
+#' @seealso [classify_pixels_by_cluster()], [segment_image()]
 #' @importFrom magick image_read image_data
+#' @importFrom grDevices rgb
 #' @export
 colour_diversity <- function(x,
                              measure = c("shannon", "gini", "evenness")) {

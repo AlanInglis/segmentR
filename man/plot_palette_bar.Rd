@@ -13,34 +13,39 @@ plot_palette_bar(
 )
 }
 \arguments{
-\item{pal}{Hex vector or data-frame with \code{hex} and optional \code{freq}.}
+\item{pal}{A character vector of hex colours or a data frame with a \code{hex} column.
+If \code{freq} is also provided (in the data frame), it is used to weight bars.}
 
-\item{counts}{Logical.  For \emph{bar} controls bar height; for \emph{swatch}
-controls whether percentages appear in the labels.}
+\item{counts}{Logical. If \code{TRUE}, use frequencies to determine bar heights (in \code{"bar"} mode)
+or show percentages (in \code{"swatch"} mode). Default is \code{TRUE}.}
 
 \item{type}{\code{"swatch"} (default) or \code{"bar"}.}
 
 \item{orientation}{\code{"horizontal"} (default) or \code{"vertical"}.}
 
-\item{show_labels}{Logical; draw text labels?  Default \code{TRUE}.}
+\item{show_labels}{Logical. Whether to display colour labels. Default is \code{TRUE}.}
 }
 \value{
-ggplot object (printed invisibly).
+A \code{ggplot} object, printed invisibly.
 }
 \description{
-Quick palette visualisation in two styles:
+Quick visualisation of colour palettes with two display styles:
 \itemize{
-\item \strong{Swatch strip} (\code{type = "swatch"}) – equal-width colour tiles.
-\code{counts} only affects whether labels show percentages.
-\item \strong{Bar plot} (\code{type = "bar"}) – bars whose height equals the pixel
-count (\code{counts = TRUE}) or a constant (\code{counts = FALSE}).
+\item \code{"swatch"} (default): Equal-width coloured tiles. If \code{counts = TRUE}, labels show percentages.
+\item \code{"bar"}: Bars whose height reflects frequency (\code{counts = TRUE}) or are constant height.
 }
+}
+\details{
+Visualise a colour palette using either a swatch strip or a frequency bar plot.
 }
 \examples{
-\dontrun{
 pal <- c("#FFFFFF", rep("#FED707", 3), "#55ADCD", "#000000")
 plot_palette_bar(pal)                          # swatch strip
-plot_palette_bar(pal, type = "bar")            # frequency bars
-}
+plot_palette_bar(pal, orientation = "vertical")  # vertical swatch strip
+plot_palette_bar(pal, type = "bar")            # bar plot with frequencies
+plot_palette_bar(pal, type = "bar", counts = FALSE)  # uniform-height bars
 
+}
+\seealso{
+\code{\link[=plot_palette]{plot_palette()}}
 }

@@ -14,21 +14,39 @@ img_to_palette(
 )
 }
 \arguments{
-\item{img}{magick image object \emph{or} path/URL to the image.}
+\item{img}{A \code{magick-image} object, or a character path/URL to an image file.}
 
-\item{n}{Integer. Number of top colours to extract. Default is NULL (all).}
+\item{n}{Integer. Number of top colours to extract. Default is \code{NULL} (return all).}
 
-\item{avg_cols}{Logical. Whether to average colours into clusters. Default is FALSE.}
+\item{avg_cols}{Logical. Whether to average colours into clusters (\code{FALSE} by default).}
 
-\item{exclude}{Logical. Whether to exclude near-black/white shades. Default is FALSE.}
+\item{exclude}{Logical. Whether to exclude near-black and near-white shades (\code{FALSE} by default).}
 
-\item{n_clusters}{Integer or NULL. Number of clusters to use for averaging. If NULL, clustering is skipped.}
+\item{n_clusters}{Integer or \code{NULL}. Number of clusters to use for averaging (if \code{avg_cols = TRUE}).}
 
-\item{custom_exclude}{Optional character vector of hex colours to exclude.}
+\item{custom_exclude}{Optional character vector of hex colours to exclude manually.}
 }
 \value{
-A character vector of hex codes representing the palette.
+A character vector of hex codes:
+\itemize{
+\item If \code{avg_cols = TRUE}, returns averaged colours (\code{avg_color})
+\item Otherwise, returns the most frequent raw colours (\code{hex})
+}
 }
 \description{
-Generate a colour palette from an image based on the most frequent colours.
+Generates a colour palette by extracting the most common colours from an image.
+Supports optional removal of near-white/black shades and grouping via k-means
+clustering. Returns either raw hex values or perceptually averaged colours.
+}
+\details{
+Extract a simplified colour palette from an image using frequency and optional clustering.
+}
+\examples{
+img_path <- system.file("extdata", "sample_img.png", package = "segmentR")
+img <- read_image(img_path)
+img_to_palette(img, n = 6)
+
+}
+\seealso{
+\code{\link[=get_top_col]{get_top_col()}}, \code{\link[=exclude_shades]{exclude_shades()}}, \code{\link[=plot_palette]{plot_palette()}}
 }

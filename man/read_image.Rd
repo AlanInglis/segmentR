@@ -29,9 +29,11 @@ Resizing maintains aspect ratio unless both dimensions are specified. Use \code{
 (e.g., 90, 180, 270).
 }
 \examples{
-\dontrun{
-img <- read_image("https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png", width = 300)
-plot(img)
-}
+# Load and resize internal sample image
+img_path <- system.file("extdata", "sample_img.png", package = "segmentR")
+img <- read_image(img_path, width = 300)
+img
+img_rotated <- read_image(img_path, rotate = 90, width = 341, height = 512)
+img_rotated
 
 }

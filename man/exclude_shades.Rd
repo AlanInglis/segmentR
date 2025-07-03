@@ -7,15 +7,25 @@
 exclude_shades(data, threshold = 0.1, custom_exclude = NULL)
 }
 \arguments{
-\item{data}{A data frame with a column \code{hex} containing HEX colours.}
+\item{data}{A data frame with a column \code{hex} containing hexadecimal colour strings.}
 
-\item{threshold}{Numeric (default 0.1). Distance from black or white to consider exclusion.}
+\item{threshold}{Numeric (default = 0.1). Distance from black or white below which
+a colour will be excluded. Range is from 0 to sqrt(3).}
 
-\item{custom_exclude}{Optional character vector of custom HEX colours to exclude.}
+\item{custom_exclude}{Optional character vector of hex codes to exclude manually.}
 }
 \value{
-Filtered data frame.
+A filtered data frame, preserving the structure of the input.
 }
 \description{
-Exclude near-black and near-white colours based on RGB distance.
+Removes near-black and near-white colours from a palette based on Euclidean
+RGB distance from black (\verb{#000000}) and white (\verb{#FFFFFF}). You can also
+exclude custom hex codes explicitly.
+}
+\examples{
+pal <- data.frame(
+hex = c("#000000", "#FFFFFF", "#FF0000", "#00FF00", "#0000FF"))
+exclude_shades(pal, threshold = 0.1)
+exclude_shades(pal, custom_exclude = "#00FF00")
+
 }

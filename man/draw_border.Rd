@@ -2,21 +2,34 @@
 % Please edit documentation in R/draw_border.R
 \name{draw_border}
 \alias{draw_border}
-\title{Draw Border on Segmented Image}
+\title{draw_border}
 \usage{
 draw_border(segmented_array, edge_color = "black")
 }
 \arguments{
-\item{segmented_array}{A numeric array representing the segmented image}
+\item{segmented_array}{A numeric RGB array (\verb{height × width × 3}) representing
+a segmented image.}
 
-\item{edge_color}{A character string specifying the color of the edges (default is "black")}
+\item{edge_color}{Colour name or hex code for the borders (default: \code{"black"}).}
 }
 \value{
-A magick-image object with borders drawn
+A \code{magick-image} object with segment borders highlighted.
 }
 \description{
-This function draws borders on a segmented image by detecting edges between different segments and allows the user to specify the border color.
+Detects edges between segments in an RGB array and overlays a border using
+a specified colour. Returns a \code{magick-image} object with borders drawn.
 }
 \details{
-The function takes a numeric array representing a segmented image and detects edges between segments. It then draws borders along these edges by setting the edge pixels to a specified color. The resulting image is converted back to a magick-image object and returned.
+Add visible borders between colour segments in a segmented image.
+}
+\examples{
+# Load and segment example image
+img_path <- system.file("extdata", "sample_img.png", package = "segmentR")
+img <- read_image(img_path, width = 341, height = 512)
+seg <- segment_image(img, n = 6)
+
+# Add border
+bordered <- draw_border(seg, edge_color = "red")
+bordered
+
 }

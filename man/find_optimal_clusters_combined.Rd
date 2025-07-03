@@ -2,18 +2,34 @@
 % Please edit documentation in R/find_optimal_clusters.R
 \name{find_optimal_clusters_combined}
 \alias{find_optimal_clusters_combined}
-\title{Find Optimal Number of Clusters}
+\title{find_optimal_clusters_combined}
 \usage{
 find_optimal_clusters_combined(img, max_clusters = 10)
 }
 \arguments{
-\item{img}{An image object}
+\item{img}{A \code{magick-image} object.}
 
-\item{max_clusters}{Maximum number of clusters to consider}
+\item{max_clusters}{Integer. The maximum number of clusters to test (default: 10).}
 }
 \value{
-A list containing the optimal number of clusters and a plot
+A list with:
+\itemize{
+\item \code{elbow_k}: number of clusters suggested by elbow method
+\item \code{silhouette_k}: number of clusters suggested by silhouette method
+\item \code{avg_k}: average of the two methods
+}
 }
 \description{
-Find Optimal Number of Clusters
+Calls \code{find_optimal_clusters()} with both \code{"elbow"} and \code{"silhouette"} methods and
+returns their suggested cluster counts, as well as the average.
+}
+\details{
+Estimate optimal clusters using both elbow and silhouette methods.
+}
+\examples{
+img_path <- system.file("extdata", "sample_img.png", package = "segmentR")
+img <- read_image(img_path)
+find_optimal_clusters_combined(img)
+
+
 }
