@@ -145,15 +145,36 @@ print.segmentR_raster <- function(x, ...) {
       "\n")
 }
 
+#' Plot a `segmentR_raster` object
+#'
+#' @param x      A `segmentR_raster`.
+#' @param col    Vector of colours for the classes (defaults to `hcl.colors()`).
+#' @param axes   Logical; draw axes?  Default `FALSE`.
+#' @param square Logical; `TRUE` (default) draws each cell square;
+#'               `FALSE` preserves the overall raster proportions.
+#' @param ...    Further arguments passed to \code{graphics::image()}.
+#'
 #' @export
 plot.segmentR_raster <- function(x,
-                                 col = hcl.colors(max(x$data)),
-                                 axes = FALSE, ...) {
+                                 col     = hcl.colors(max(x$data)),
+                                 axes    = FALSE,
+                                 square  = TRUE,
+                                 ...) {
   op <- par(no.readonly = TRUE)
   on.exit(par(op))
-  par(mar = c(4, 4, 1, 1))
-  # flip y-axis for conventional raster orientation
+
+  par(mar = c(0, 0, 0, 0))          # tidy outer margins
   img_mat <- t(apply(x$data, 2, rev))
-  image(img_mat, col = col, axes = axes, asp = 1, ...)
+
+  # aspect ratio: 1 for square cells, else rows / columns
+  asp_ratio <- if (square) 1 else nrow(img_mat) / ncol(img_mat)
+
+  image(img_mat,
+        col   = col,
+        axes  = axes,
+        asp   = asp_ratio,
+        useRaster = TRUE,
+        ...)
+
   box()
 }
